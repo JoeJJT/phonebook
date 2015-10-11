@@ -8,10 +8,8 @@
 LastNameEntry *findName(char lastname[], LastNameEntry *pHead)
 {
     /* TODO: implement */
-    while(pHead != NULL) 
-	{
-        if(strcasecmp(lastname,pHead->lastName) == 0) 
-		{
+    while(pHead != NULL) {
+        if(strcasecmp(lastname,pHead->lastName) == 0) {
             printf("%s is found!\n",lastname);
             return pHead;
         }
