@@ -5,11 +5,11 @@
 /* optimal version1 */
 typedef struct __PHONE_BOOK_LAST_NAME {
     char lastName[MAX_LAST_NAME_SIZE];
-    entry *detail;
+    detail_entry *detail;
     struct __PHONE_BOOK_LAST_NAME *pNext;
-} LastNameEntry;
+} entry;
 
-LastNameEntry *findName(char lastname[], LastNameEntry *pHead);
-LastNameEntry *append(char lastName[], LastNameEntry *e);
+entry *findName(char lastname[], entry *pHead);
+entry *append(char lastName[], entry *e);
 
 #endif

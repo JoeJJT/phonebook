@@ -11,5 +11,5 @@ typedef struct __PHONE_BOOK_ENTRY {
     char state[2];
     char zip[5];
     struct __PHONE_BOOK_ENTRY *pNext;
-} entry;
+} detail_entry;
 

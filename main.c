@@ -23,7 +23,7 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
 
 int main(int argc, char *argv[])
 {
-    FILE *fp;
+    FILE *fp,*fp2;
     int i = 0;
     char line[MAX_LAST_NAME_SIZE];
     struct timespec start, end;
@@ -35,6 +35,8 @@ int main(int argc, char *argv[])
         printf("cannot open the file\n");
         return -1;
     }
+
+    fp2 = fopen("test.txt","w");
 
     /* build the entry */
     entry *pHead, *e;
@@ -81,7 +83,8 @@ int main(int argc, char *argv[])
 
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
-
+    fprintf(fp2,"execution time of append() : %1f sec\n",cpu_time1);
+    fprintf(fp2,"execution time of findName() : %1f sec\n",cpu_time2);
     /* FIXME: release all allocated entries */
     free(pHead);
 

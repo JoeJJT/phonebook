@@ -5,7 +5,7 @@
 #include "phonebook_opt.h"
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
-LastNameEntry *findName(char lastname[], LastNameEntry *pHead)
+entry *findName(char lastname[], entry *pHead)
 {
     /* TODO: implement */
     while(pHead != NULL) {
@@ -18,9 +18,9 @@ LastNameEntry *findName(char lastname[], LastNameEntry *pHead)
     return NULL;
 }
 
-LastNameEntry *append(char lastName[], LastNameEntry *e)
+entry *append(char lastName[], entry *e)
 {
-    e->pNext = (LastNameEntry *)malloc (sizeof(LastNameEntry));
+    e->pNext = (entry *)malloc (sizeof(entry));
     e = e->pNext;
     strcpy(e->lastName,lastName);
     e->pNext = NULL;
