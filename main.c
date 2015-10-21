@@ -23,7 +23,7 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
 
 int main(int argc, char *argv[])
 {
-    FILE *fp,*fp2;
+    FILE *fp,*fp2,*fp3;
     int i = 0;
     char line[MAX_LAST_NAME_SIZE];
     struct timespec start, end;
@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    fp2 = fopen("test.txt","w");
-
+    fp2 = fopen("perf_orig.txt","a");
+	fp3 = fopen("perf_opt.txt","a");
     /* build the entry */
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
@@ -48,7 +48,26 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
-    clock_gettime(CLOCK_REALTIME, &start);
+
+#if defined(OPT)
+	/*Create a hash table. tableSize is a prime number*/
+	int tableSize = 42737;
+	hashTable *ht = createHashTable(tableSize);
+	printf("hash table size(prime number): %d \n",tableSize);
+	clock_gettime(CLOCK_REALTIME, &start);
+	while(fgets(line,sizeof(line),fp)) {
+		while(line[i] != '\0') {
+			i++;
+		}
+		line[i - 1] = '\0';
+		i = 0;
+		appendHash(line,ht);
+	}
+	clock_gettime(CLOCK_REALTIME,&end);
+	cpu_time1 = diff_in_second(start,end);
+#endif	
+#if defined(ORIG)
+	clock_gettime(CLOCK_REALTIME,&start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -58,35 +77,65 @@ int main(int argc, char *argv[])
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-
+#endif
     /* close file as soon as possible */
     fclose(fp);
-
+/*#if defined(OPT)
+	//ht = pHead;
+	char input[MAX_LAST_NAME_SIZE] = "zyxel";
+	//ht = pHead;
+#endif*/
+//#if defined(ORIG)
     e = pHead;
-
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
+//#endif
 
+#if defined(ORIG)
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#endif
+#if defined(OPT)
+	assert(findNameHash(input,ht) &&
+		"findName error!");
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
     /* compute the execution time */
-    clock_gettime(CLOCK_REALTIME, &start);
+#if defined(ORIG)
+	clock_gettime(CLOCK_REALTIME, &start);
     findName(input, e);
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
-
+#endif
+#if defined(OPT)
+	clock_gettime(CLOCK_REALTIME,&start);
+	findNameHash(input,ht);
+	clock_gettime(CLOCK_REALTIME, &end);
+	cpu_time2 = diff_in_second(start,end);
+#endif
+#if defined(OPT)
+	printf("execution time of appendHash() : %lf sec\n",cpu_time1);
+	printf("execution time of findNameHash() : %lf sec\n",cpu_time2);
+	fprintf(fp3,"execution time of appendHash() : %lf sec\n",cpu_time1);
+	fprintf(fp3,"execution time of findNameHash() : %lf sec\n",cpu_time2);
+#endif
+#if defined(ORIG)
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
     fprintf(fp2,"execution time of append() : %1f sec\n",cpu_time1);
     fprintf(fp2,"execution time of findName() : %1f sec\n",cpu_time2);
+#endif
+
+
     /* FIXME: release all allocated entries */
     free(pHead);
-
+	fclose(fp2);
+	fclose(fp3);
     return 0;
 }
